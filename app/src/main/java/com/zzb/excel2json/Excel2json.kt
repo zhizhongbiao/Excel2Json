@@ -35,9 +35,16 @@ fun excelToJson(excelPath: String, outputDir: String) {
         val row = sheet.getRow(rowIdx) ?: continue
         val key = row.getCell(0)?.stringCellValue?.trim() ?: continue
         if (key.isEmpty()) continue
+        val enIdx = langCodes.indexOf("en")
+        val enValue =
+            if (enIdx != -1)
+                row.getCell(enIdx + 1)?.stringCellValue ?: ""
+            else
+                ""
         for ((langIdx, lang) in langCodes.withIndex()) {
             val value = row.getCell(langIdx + 1)?.stringCellValue?.trim() ?: ""
             langMaps[lang]?.put(key, value)
+            langMaps[lang]?.put(key, if (value.isNullOrBlank()) enValue else value)
         }
     }
     // 输出json
